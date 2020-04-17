@@ -1,0 +1,14 @@
+﻿
+
+
+C:\python-workspace> pip install pyinstaller
+
+	// 파이썬 소스코드로 실행파일을 생성하는 pyinstaller 설치하기
+
+C:\python-workspace> pyinstaller --onefile ex10_member.py
+
+	// 실행파일은 현재위치의 dist 폴더 내부에 생성된다
+
+C:\python-workspace> python -m pip install --upgrade pip
+
+	// pip를 업그레이드 하는 명령어

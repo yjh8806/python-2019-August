@@ -1,0 +1,97 @@
+﻿F:\7월 주말 웹Django 원종래\django-workspace>django-admin startproject day06
+
+F:\7월 주말 웹Django 원종래\django-workspace>cd day06
+
+F:\7월 주말 웹Django 원종래\django-workspace\day06>python manage.py startapp index
+
+F:\7월 주말 웹Django 원종래\django-workspace\day06>python manage.py migrate
+
+	...
+	Applying sessions.0001_initial... OK
+
+F:\7월 주말 웹Django 원종래\django-workspace\day06>python manage.py createsuperuser
+Username (leave blank to use 'teacher'): root
+Email address:
+Password:
+Password (again):
+This password is too short. It must contain at least 8 characters.
+This password is too common.
+This password is entirely numeric.
+Bypass password validation and create user anyway? [y/N]: y
+Superuser created successfully.
+
+F:\7월 주말 웹Django 원종래\django-workspace\day06>
+
+
+==> project/settings.py <==			// 프로젝트에서 우리가 추가한 앱을 등록하고, 언어 및 시간을 설정한다
+
+    33	INSTALLED_APPS = [
+    34	    'django.contrib.admin',
+    35	    'django.contrib.auth',
+    36	    'django.contrib.contenttypes',
+    37	    'django.contrib.sessions',
+    38	    'django.contrib.messages',
+    39	    'django.contrib.staticfiles',
+    40	    'index',
+    41	]
+
+   107	#LANGUAGE_CODE = 'en-us'
+   108	LANGUAGE_CODE = 'ko-kr'
+
+   110	#TIME_ZONE = 'UTC'
+   111	TIME_ZONE = 'Asia/Seoul'
+
+===========================
+
+
+==> project/urls.py <==				// 주소창에 입력한 값에 따라서 어떻게 연결할지 설정
+						// 프로젝트의 urls.py가 각각 app에게 urls.py를 전달하도록 설정
+
+    16	from django.contrib import admin
+    17	from django.urls import path, include
+
+    19	urlpatterns = [
+    20	    path('admin/', admin.site.urls),
+    21	    path('', include('index.urls'))
+    22	]
+
+===========================
+
+
+
+
+
+==> index/urls.py <==
+						// 앱에는 urls.py가 없으므로, 파일을 새로 만든 후 프로젝트의 urls 내용을 복사하여 수정
+
+from django.contrib import admin
+from django.urls import path, include
+
+from . import views				// 같은 위치의 views.py를 식별시킨다
+
+urlpatterns = [
+    path('',views.index, name='index'),		// 아무 내용 없이 접근하면 views.py의 index를 찾아가게 한다
+]
+
+===========================
+
+
+==> index/views.py <==
+
+from django.shortcuts import render
+
+# Create your views here.
+
+def index(request):
+    return render(request, 'index/index.html')
+
+
+
+
+
+
+
+
+
+
+

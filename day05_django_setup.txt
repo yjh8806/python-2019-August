@@ -1,0 +1,70 @@
+﻿0. Django 설치
+
+	F:\7월 주말 웹Django 원종래\django-workspace>pip install django
+
+
+1. 프로젝트 생성 (전체 홈페이지를 가리키는 단위)
+
+	F:\7월 주말 웹Django 원종래\django-workspace>django-admin startproject testpro1
+
+	F:\7월 주말 웹Django 원종래\django-workspace>dir /w
+
+	[.]        [..]       [myweb1]   [testpro1]
+
+
+2. 앱 생성 (각 세부 기능을 담당하는 작은 프로그램) 및 앱 추가
+
+	
+
+	F:\7월 주말 웹Django 원종래\django-workspace>cd testpro1
+
+	F:\7월 주말 웹Django 원종래\django-workspace\testpro1>python manage.py startapp app1
+	
+
+	프로젝트의 settings.py 에서
+	=======================================================
+	# Application definition
+
+	INSTALLED_APPS = [
+	    'django.contrib.admin',
+	    'django.contrib.auth',
+	    'django.contrib.contenttypes',
+	    'django.contrib.sessions',
+	    'django.contrib.messages',
+	    'django.contrib.staticfiles',
+	    'app1',	# 여기에 자신이 만든 앱 이름을 추가한다
+	]
+	=======================================================	
+
+
+3. DB 생성 (사이트에서 사용되는 Data를 저장할 저장소)
+
+	F:\7월 주말 웹Django 원종래\django-workspace\testpro1>python manage.py migrate
+
+
+4. 관리자 계정 생성 (DB를 웹에서 제어하기 위한 계정)
+
+	F:\7월 주말 웹Django 원종래\django-workspace\testpro1>python manage.py createsuperuser
+	Username (leave blank to use 'teacher'): root
+	Email address:
+	Password:
+	Password (again):
+	This password is too short. It must contain at least 8 characters.
+	This password is too common.
+	This password is entirely numeric.
+	Bypass password validation and create user anyway? [y/N]: y
+	Superuser created successfully.
+
+
+5. 서버 실행 (파일이 준비되어 있어도, 서버가 실행중이 아니면 사이트에 접속할 수 없다)
+
+	F:\7월 주말 웹Django 원종래\django-workspace\testpro1>python manage.py runserver 0.0.0.0:8080
+	...
+	Starting development server at http://0.0.0.0:8080/
+	Quit the server with CTRL-BREAK.
+
+
+6. 웹 브라우저 주소창에 http://127.0.0.1:8080 접속해서 장고 서버 기본 페이지 (로켓) 확인하기
+
+
+

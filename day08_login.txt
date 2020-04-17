@@ -1,0 +1,102 @@
+﻿django 세션 로그인 만들어보기
+
+
+==> urls.py <==
+
+from django.contrib import admin
+from django.urls import path, include
+
+from . import views
+
+urlpatterns = [
+    path('', views.Index.as_view(), name='index'),
+    path('logout/', views.logout, name='logout'),
+]
+
+===============
+127.0.0.1:8000 으로 접속하면 클래스 뷰 Index에 연결된다(get/post)
+
+
+
+
+
+
+
+==> views.py <==
+
+
+from django.views.generic import View
+
+from .models import Member
+
+class Index(View):
+    def get(self, request):
+        return render(request, 'index/index.html')  		# 사이트 로고와 간단 로그인 폼이 있는 템플릿
+
+    def post(self, request):					# 계정을 입력받으면
+        userid = request.POST['userid']				# 입력받은 계정
+        userpw = request.POST['userpw']				# 입력받은 비밀번호
+
+        login = Member.objects.all().filter(userid=userid)    	# 입력받은 계정이름으로 DB에서 정보를 가져온다
+        # 여러 개 중에서 조건에 맞는 결과를 반환
+        
+        # login = Member.objects.get(userid=userid)
+        # 제시한 조건에 대해서 반드시 결과가 있는 경우에만 사용
+        
+        if len(login) != 0 and login[0].userpw == userpw:	# 만약 DB의 계정정보 비밀번호와 입력받은 비밀번호가 일치하면
+            # 세션에 계정 이름과 사용자 이름을 저장 (개별 문자열을 저장)
+            request.session['userid'] = login[0].userid		# 세션에 계정을 저장
+            request.session['username'] = login[0].username	# 세션에 사용자 이름을 저장
+            
+            return render(request, 'index/check.html', {'result' : True})	
+        else:
+            return render(request, 'index/check.html', {'result' : False})
+
+
+from django.http import HttpResponseRedirect    	# redirect : 클라이언트에게 지정한 주소로 이동해라
+from django.contrib.sessions.models import Session
+
+def logout(request):			# 로그아웃 버튼을 누르면 작동하는 함수형 view
+    Session.objects.all().delete()  	# 세션이 DB에 저장되는 형식이므로, DB와 동일하게 삭제함수를 호출
+    return HttpResponseRedirect('/')    # 파일이름이 없으니까 index를 요청한다
+
+
+
+
+
+==> index.html <==
+
+    {% if request.session.username %}   <!-- 만약 세션에 계정 정보가 있으면 -->
+        {{ request.session.userid }}
+        ( {{ request.session.username }} ) 님, 로그인을 환영합니다
+        <a href="logout"><button>로그아웃</button></a>
+
+    {% else %}  			<!-- 만약 세션에 계정 정보가 없으면-->
+        <form method="POST">
+            {% csrf_token %}
+            <input name="userid" placeholder="ID" size="10" required>
+            <input name="userpw" placeholder="Password" size="10" type="password" required>
+            <input type="submit" value="로그인">
+        </form>            
+    {% endif %}
+
+
+
+
+
+
+==> check.html <==
+
+
+    {% if result %}
+        <script>
+            location.href = "/";
+        </script>
+    {% else %}
+        <script>
+            alert("계정 정보를 다시 확인해주세요");
+            history.go(-1);
+        </script>
+    {% endif %}
+
+

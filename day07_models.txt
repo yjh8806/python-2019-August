@@ -1,0 +1,275 @@
+﻿
+
+	<Model 활용하기>
+	
+
+1. app 내부의 models.py에서 코드를 작성한다
+
+	==> app1/models.py <==
+
+	class Member(models.Model):
+	    name = models.CharField(max_length = 30)
+	    age = models.IntegerField()
+
+
+	// 클래스는 table의 역할이며, 클래스 필드는 컬럼 이름이다
+	// django가 가지고 있는 models.Model 클래스를 상속받고
+	// 필요한 필드만 추가한다
+
+
+	table Member
+	
+	id(pk)		Name		age
+	1		송하나		24	
+	2		홍진호		22
+
+	와 같은 값을 입력할 수 있도록 table을 구성하기 위한 클래스
+
+
+
+
+2. admin사이트에서 접근가능하도록 등록한다
+
+	==> app1/admin.py <==
+
+	from app1.models import Member
+
+	admin.site.register(Member)
+
+
+	==> pro1/settings.py <==
+
+	INSTALLED_APPS = [
+	    .
+	    .
+	    'app1',
+	]
+
+
+3. project의 manage.py를 이용하여 db 변경점을 체크하도록 하고 반영한다
+
+
+> python .\manage.py makemigrations
+
+> python .\manage.py migrate
+
+
+
+
+4. admin 페이지에 접근하면 해당 app에 
+   [ClassName]s 라는 항목이 생성되어 있다.
+   접근하여 새 항목을 생성하고 저장해보면 내용이 반영된다
+
+
+
+5. 방금 생성한 항목들의 리스트를 출력하는 페이지를 만들어보자
+
+
+6. views.py 에서 from app.models import [ClassName] 을 등록
+   아래와 같이 작성한다
+
+	==> app1/views.py <==
+
+	from app1.models import Member
+	def memberlist(request):
+	    q = Member.objects.all()
+	    return render(request, 'app1/memberlist.html', {'memlist' : q})
+
+
+// 모델 클래스는 django의 모델 클래스를 상속받았으므로
+// 필요한 기능이 모두 구현되어 있다
+// Member.objects.all() 은 
+// select * from Members; 
+// 위 형식의 sql문의 역할을 하지만, sql문을 몰라도 python코드로 사용할 수 있다
+
+
+// Visual Studio Code 로 작성할 때 views에서 import를 수행했음에도 제대로 식별하지 못해
+// 빨간 밑줄이 뜨는 버그가 있다. 서버 실행은 잘된다. 해결하려면
+
+> pip install pylint-django
+Ctrl + , 
+pylint args 검색
+
+Python › Linting: Pylint Args 항목의 Edit in settings.json
+
+==> settings.json <==
+"python.linting.pylintArgs": [
+        "--load-plugins=pylint_django",
+    ],
+
+을 추가한다
+
+
+
+7. 반환되는 context를 표현할 수 있는 template을 작성하자
+
+	==> templates/app1/memberlist.html <==
+
+	{% for member in memlist %}
+	    {{member.name}} / {{ member.age }} <br>
+	{% endfor %}
+
+// view에서 memlist 라는 이름으로 q를 반환했으므로
+// memlist 내부의 하나하나의 객체를 member라고 할때
+// member.name 과 member.age를 출력하고 줄바꿈
+// template에서 쓰는 제어문은 {% %} 사이에 작성하며
+// endif와 endfor를 동반한다
+
+
+8. 이제 주소요청을 받으면 urls -> views -> models -> templates
+   의 형식으로 연결할 수 있도록 urls를 설정한다
+
+	==> pro1/urls.py <==
+	urlpatterns = [
+	    path('app1/', include('app1.urls')),
+	    path('admin/', admin.site.urls),
+	]
+
+	==> app1/urls.py <==
+
+	urlpatterns = [
+	    path('', views.index, name='index'),
+	    path('memberlist/', views.memberlist, name='memberlist'),
+	]
+
+
+9. 서버 실행 후 브라우저로 확인
+
+> python manage.py runserver 0.0.0.0:8080
+
+	==> http://localhost:8080/app1/memberlist/ <==
+	
+	root / 20 
+	이지은 / 27 
+	홍진호 / 22 
+
+
+10. 이번에는 이름을 입력받아서 해당 정보만 출력할 수 있도록 작성해보자
+
+
+	[urls] -> views -> models -> templates
+
+	==> app1/urls.py <==
+
+	urlpatterns = [
+	    path('', views.index, name='index'),
+	    path('memberlist/', views.memberlist, name='memberlist'),
+	    path('member/', views.MemberSearch.as_view(), name='MemberSearch'),
+	]
+
+
+	이번에는 클래스 뷰를 사용할 예정이다. 클래스 뷰는 views.[클래스이름].as_view() 형식으로 지정하도록 한다
+
+
+
+
+	urls -> [views] -> models -> templates
+
+	// View의 형식을 클래스로 하기 위해서 django가 가지는 기본 뷰 클래스를 상속받아서 작성한다
+
+	==> app1/views.py <==
+
+	from django.views.generic import View 
+	
+	class MemberSearch(View):
+	    def get(self, request):
+	        return render(request, 'app1/membersearch.html')
+    
+	    def post(self, request):
+	        name = request.POST['name']
+	        print(name)
+	        q = Member.objects.all().filter(name__contains=name)
+        
+	        return render(request, 'app1/memberlist.html', {'memlist' : q})
+
+	
+	클래스 뷰는 요청이 get으로 전달될 때와 post로 전달될 때를 구분하여 처리할 수 있다
+	get() 메서드는 브라우저의 주소창에 전달되거나, <a>태그에 의해서 링크를 통한 클릭의 경우, <form method="get">으로 지정된 경우이다
+	get으로 요청받으면 app1/membersearch.html로 전달할 것이며, 해당 템플릿은 검색할 이름을 입력받는 단순한 코드로 작성한다
+
+	==> app1/templates/app1/membersearch.html <==
+
+	<html>
+	    <head>
+	        <meta charset="utf-8">
+	    </head>
+	    <body>
+	        <form method="post" action="">
+	            {% csrf_token %}
+	            검색할 이름 : <input name="name"><input type="submit" value="검색">
+	        </form>
+	    </body>
+	</html>
+
+	해당 템플릿 파일은 get에 의한 요청을 받았을 경우 출력할 페이지이며
+	이름을 검색하여 사용자의 입력을 post로 자기자신에게 전달한다.
+	<form> 태그의 action 값이 전달할 페이지인데, 없으면 자신에게 재전송하게 된다
+	
+	<form> 태그의 method 값이 post라면 django에서는 항상 {% csrf_token %}을 작성해야 정상적으로 작동한다 (보안 요소)
+
+	다시 클래스 뷰를 살펴보자
+
+
+	==> app1/views.py <==
+
+	from django.views.generic import View 
+	
+	class MemberSearch(View):
+	    def get(self, request):
+	        return render(request, 'app1/membersearch.html')
+    
+	    def post(self, request):
+	        name = request.POST['name']
+	        print(name)
+	        q = Member.objects.all().filter(name__contains=name)
+        
+	        return render(request, 'app1/memberlist.html', {'memlist' : q})
+
+
+	이번에는 post로 요청이 온 경우를 처리하는 post()메서드를 살펴보자
+
+	request중에서 POST로 온 내용 중 필드이름이 name인 값을 지역변수 name에 저장하고
+
+	q = Member.objects.all().filter(name__contains=name) 
+	// 전체 Member목록 중에서 name필드의 값이 전달받은 이름을 포함하는 목록만 Member객체로 반환
+						
+
+	위 구문의 객체를 리스트에 추가하여 context에 추가하고 있다
+
+	Member.objects.all().filter(name__contains=name) 형식을 이용하여 원하는 조건에 맞는 결과만 따로 검색할 수 있다
+
+	post()메서드가 반환에 사용하는 템플릿이 아까 작성했던 전체 리스트를 출력하는 템플릿인데
+	검색결과에 따라 내용이 있거나 없을 수 있으므로 약간 수정을 한다
+
+	==> app1/templates/app1/memberlist.html <==
+
+	{% if memlist|length != 0 %}				// 전달받은 memlist의 길이가 0이 아니면
+	    {% for member in memlist %}				// 기존의 코드를 그대로 실행하고
+	        {{member.name}} / {{ member.age }} <br>
+	    {% endfor %}
+
+	{% else %}						// (memlist의 길이가 0이 아닌 조건이) 아니면 (== 길이가 0이면)
+	    <p>결과를 찾을 수 없습니다</p>				// 해당 문장을 출력
+    
+	{% endif %}						// if의 끝
+
+
+	11. 위 결과를 어느정도 이해했다면, 내용을 참조하면서 새로운 프로젝트를 생성하고
+	    login이라는 app을 생성하여
+	    admin 페이지에서 접근 가능한 계정과 password를 여러개 설정하고,
+	    해당 계정으로 로그인이 수행가능한 간단한 로그인 페이지를 만들어보자
+
+	
+	
+	
+
+
+
+
+
+
+
+
+
+
+
