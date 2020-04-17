@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    이름으로 검색 (POST)
+    <form action="" method="post">
+    {% csrf_token %}
+        <input name="name" required>
+        <button>검색</button>
+    </form>
+
+    <table border="1" cellpadding="7" cellspacing="0">
+        <tr>
+            <th>이름</th>
+            <th>나이</th>
+        </tr>
+        
+            {% if memberlist|length != 0 %}
+                {% for member in memberlist %}
+                <tr>
+                    <td>{{ member.name }}</td>
+                    <td>{{ member.age }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <th colspan="2">결과를 찾을 수 없습니다</th>
+                </tr>
+            {% endif %}
+        
+    </table>
+</body>
+</html>

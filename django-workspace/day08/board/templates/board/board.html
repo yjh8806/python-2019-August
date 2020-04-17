@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=r, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+
+<!-- <style>
+    th{
+        background: chocolate;
+        color: white;
+    }
+    td{
+        font-weight: bolder;
+        text-align: center;
+    }
+</style> -->
+<body>
+    게시판 페이지
+    <table border="1" width="800px" align="center" cellspacing="0" cellpadding="7">
+        <tr>
+            <th width="10%">번호</th>
+            <th width="50%">제목</th>
+            <th>작성자</th>
+            <th>작성일자</th>
+        </tr>
+        <!-- 여기서부터 DB에서 받아와서 처리하는 부분-->
+        {% for i in board reversed %}
+        <tr>
+            <td>{{ i.id }}</td>
+            <td style="text-align: left;">{{ i.title }}</td>
+            <td>{{ i.writer }}</td>
+            <td>{{ i.time }}</td>
+        </tr>
+        {% endfor %}
+        <!-- 여기까지 DB에서 받아와서 처리하는 부분-->
+    </table>
+    <button>테스트</button>
+</body>
+</html>

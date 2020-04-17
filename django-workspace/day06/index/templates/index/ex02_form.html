@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>GET방식으로 요청, 입력 폼</title>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <form action="" method="POST">
+            {% csrf_token %}    <!-- 요청 위조를 방지하는 토큰 -->
+
+        <!-- form 태그는 입력값을 전달하는 단위, 
+                action 속성은 전달할 대상 페이지
+                method 속성은 get(주소창을 통한 전달), post(HTTP 헤더를 통한 전달)
+        -->
+            <table>
+                <tr>
+                    <th>로그인</th>
+                </tr>
+                <tr>
+                    <td><input name="userid" placeholder="계정을 입력하세요" type="text" required></td>
+                </tr>
+                <tr>
+                    <td><input name="userpw" placeholder="비밀번호를 입력하세요" type="password" required></td>
+                </tr>
+                <tr>
+                    <td><input type="submit" value="로그인"></td>
+                </tr>
+            </table>
+        </form>
+    </body>
+</html>

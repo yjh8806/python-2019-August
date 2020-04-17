@@ -1,0 +1,30 @@
+
+<!DOCTYPE html>
+<!-- ex01_memberlist.html -->
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Models 내용 불러와서 출력하기</title>
+    </head>
+    <style>
+    body{
+        text-align: center;
+        font-size: 20pt;
+        font-weight: bolder;
+    }
+    </style>
+    <body>
+        <table align="center" cellpadding="7" cellspacing="0" border="1">
+            <tr>
+                <th>이름</th>
+                <th>나이</th>
+            </tr>
+            {% for member in memberlist %}
+            <tr>
+                <td>{{ member.name }}</td>
+                <td>{{ member.age }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </body>
+</html>

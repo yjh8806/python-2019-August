@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>두 수의 연산</title>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <form action="" method="POST">
+            {% csrf_token %}    <!-- 요청 위조를 방지하는 토큰 -->
+            <input type="text" name="n1" size="3" required>
+            <select name="oper">
+                <option>연산자</option>
+                <option value="+"> + </option>
+                <option value="-"> - </option>
+                <option value="*"> * </option>
+                <option value="/"> / </option>
+            </select>
+            <input type="text" name="n2" size="3" required>
+            = 
+            <input type="submit" value="정답확인">
+        </form>
+    </body>
+</html>
